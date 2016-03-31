@@ -1,4 +1,5 @@
 import classcloud
+import json
 import unittest
 from io import StringIO
 token = None
@@ -13,8 +14,11 @@ class ServerTestCase(unittest.TestCase):
     self.client = classcloud.app.test_client()
 
   def test_list_files(self):
-    # invalid token
+    # no token
     result = self.client.get("/list_files")
+    self.assertEqual(result.status_code, 400)
+    # invalid token
+    result = self.client.get("/list_files", data=json.dumps({"token": token}), content_type="application/json")
     self.assertEqual(result.status_code, 400)
 
   def test_put_file(self):
