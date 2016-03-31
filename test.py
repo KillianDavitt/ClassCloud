@@ -1,8 +1,8 @@
 import classcloud
 import json
+import io
 import os
 import unittest
-from io import StringIO
 
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 TESTING_DB = "classcloud_testing.sqlite"
@@ -30,8 +30,8 @@ class ServerTestCase(unittest.TestCase):
     self.assertEqual(result.status_code, 200)
 
   def test_put_file(self):
-    post_data = dict(token=token, file=(StringIO('my file contents'), 'helloworld.txt'), path="/john")
-    result = self.client.post('/put_file', data= {'token':token, 'path':'/john', })
+    #post_data = dict(token=token, file=(StringIO('my file contents'), 'helloworld.txt'), path="/john")
+    result = self.client.post('/put_file', data= {'token':token, 'path':'/john', 'file': (io.BytesIO(b"this is a test"), 'test.pdf')})
     print(result)
     print(result.data)
 
