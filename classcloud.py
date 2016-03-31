@@ -115,9 +115,10 @@ def put_file():
   db.session.commit()
   return "Ok", 200
 
-
+# return a random string of FILE_ID_LENGTH length
 def gen_id():
-  return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(FILE_ID_LENGTH))
+  chars = string.ascii_uppercase + string.digits + string.ascii_lowercase
+  return "".join(random.SystemRandom().choice(chars) for _ in range(FILE_ID_LENGTH))
 
 # return a file corresponding to a given id. token required
 @app.route("/get_file", methods=["GET"])
