@@ -3,9 +3,10 @@ import flask
 import flask_sqlalchemy
 import json
 import os
-from werkzeug import secure_filename
 import random
+import shutil
 import string
+import werkzeug
 
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
@@ -13,7 +14,7 @@ HOST = "127.0.0.1"
 PORT = 3000
 DEBUG = True
 TOKEN_PATH = os.path.join(DIRECTORY, "classcloud.token")
-UPLOAD_FOLDER = "files"
+UPLOAD_FOLDER = os.path.join(DIRECTORY, "files")
 FILE_ID_LENGTH = 10
 
 # return token or None
@@ -29,6 +30,17 @@ app = flask.Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///classcloud.sqlite"
 db = flask_sqlalchemy.SQLAlchemy(app)
 token = get_token()
+
+def empty_folder(folder):
+  for file in os.listdir(folder):
+    file_path = os.path.join(folder, file)
+    try:
+      if os.path.isfile(file_path):
+        os.unlink(file_path)
+      elif os.path.isdir(file_path):
+        shutil.rmtree(file_path)
+    except Exception as e:
+      print("Could not delete file %s: %r" % (file_path, e))
 
 ##########
 # Models #
@@ -63,10 +75,10 @@ def list_files():
   files.sort(key=lambda x: x[1]) # sort by full path
   return json.dumps(files, indent=2), 200
 
+# add a file
 @app.route("/put_file", methods=["POST"])
 def put_file():
   data = flask.request.get_json()
-  print(data)
   # json
   if not data:
     return "No json", 400
@@ -81,7 +93,7 @@ def put_file():
   filename = data.get("filename", None)
   if not filename:
     return "No filename", 400
-  filename = secure_filename(filename)
+  filename = werkzeug.secure_filename(filename)
   # file data
   file_data = data.get("file", None)
   if not file_data:
@@ -129,11 +141,9 @@ def get_file():
 #######
 
 if __name__ == "__main__":
+  empty_folder(UPLOAD_FOLDER)
   db.drop_all()
   db.create_all()
-  if token:
-  	app.run(host=HOST, port=PORT, debug=DEBUG)
-  else:
-  	print("Could not read token.\nExiting...")
+  app.run(host=HOST, port=PORT, debug=DEBUG)
 
 
