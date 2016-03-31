@@ -73,7 +73,7 @@ def list_files():
     return "Invalid Token", 400
   files = [[file.id, file.full_path()] for file in File.query.all()]
   files.sort(key=lambda x: x[1]) # sort by full path
-  return json.dumps(files, indent=2), 200
+  return flask.jsonify(files=files), 200
 
 # add a file
 @app.route("/put_file", methods=["POST"])

@@ -1,4 +1,5 @@
 import classcloud
+import flask
 import json
 import io
 import os
@@ -34,11 +35,13 @@ class ServerTestCase(unittest.TestCase):
     # upload simple text file
     data = json.dumps({"token": token, "path": "john", "filename": "test.txt", "file": open("test.txt").read()})
     result = self.client.post("/put_file", data=data, content_type="application/json")
-    print(result)
-    
+    print("test_get_file: /put_file result: %s" % result.data)
+
     result = self.client.get("/list_files", data=json.dumps({"token": token}), content_type="application/json")
-    print(result.data) 
-    
+    print("test_get_file: /list_files result: %s" % result.data)
+    data = flask.json.loads(result.data)
+    print("test_get_file: /list_files json: %s" % data)
+
     data = json.dumps({'id':'4fsrf4'})
     result = self.client.get("/get_file", data=data, content_type="application/json")
     print(result.data)
