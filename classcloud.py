@@ -56,7 +56,8 @@ def list_files():
     return "No token", 400
   if data["token"] != token:
     return "Invalid Token", 400
-  return json.dumps([file.path for file in File.query.all()]), 200
+  filepaths = [os.path.join(file.path, file.filename) for file in File.query.all()]
+  return json.dumps(filepaths), 200
 
 @app.route("/put_file", methods=["POST"])
 def put_file():
@@ -94,7 +95,7 @@ if __name__ == "__main__":
   db.drop_all()
   db.create_all()
   if token:
-  	app.run(host=HOST, port=PORT)
+  	app.run(host=HOST, port=PORT, debug=DEBUG)
   else:
   	print("Could not read token.\nExiting...")
 
