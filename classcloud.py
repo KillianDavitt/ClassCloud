@@ -84,7 +84,8 @@ def gen_id():
   return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(FILE_ID_LENGTH))
 
 
-def put_file():
+@app.route("get_file", methods=["GET"])
+def get_file():
 	pass
 
 #######
