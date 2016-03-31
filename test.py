@@ -1,13 +1,18 @@
 import classcloud
 import json
+import os
 import unittest
 from io import StringIO
-token = None
+
+DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+TESTING_DB = "classcloud_testing.sqlite"
+
+token = classcloud.get_token()
 
 class ServerTestCase(unittest.TestCase):
 
   def setUp(self):
-    classcloud.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///classcloud_testing.sqlite"
+    classcloud.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + TESTING_DB
     classcloud.app.config["TESTING"] = True
     classcloud.db.drop_all()
     classcloud.db.create_all()
@@ -30,6 +35,8 @@ class ServerTestCase(unittest.TestCase):
     print(result)
     print(result.data)
 
+  def tearDown(self):
+    os.remove(os.path.join(DIRECTORY, TESTING_DB))
+
 if __name__ == "__main__":
-  token = classcloud.get_token()
   unittest.main()
