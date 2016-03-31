@@ -44,6 +44,9 @@ class File(db.Model):
     self.path = path
     self.filename = filename
 
+  def full_path(self):
+    return os.path.join(self.path, self.filename)
+
 ##########
 # Routes #
 ##########
@@ -56,7 +59,7 @@ def list_files():
     return "No token", 400
   if data.get("token", None) != token:
     return "Invalid Token", 400
-  files = [[file.id, os.path.join(file.path, file.filename)] for file in File.query.all()]
+  files = [[file.id, file.full_path()] for file in File.query.all()]
   files.sort(key=lambda x: x[1]) # sort by full path
   return json.dumps(files, indent=2), 200
 
@@ -85,17 +88,22 @@ def put_file():
 def gen_id():
   return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(FILE_ID_LENGTH))
 
-
+# return a file corresponding to a given id. token required
 @app.route("/get_file", methods=["GET"])
 def get_file():
   data = flask.request.get_json()
   if not data:
     return "No token", 400
   if data.get("token", None) != token:
-    return "Invalid Token", 400
-  # if data.get("filepath")
-  # return flask.send_file()
-  return ""
+    return "Invalid token", 400
+  id_ = data.get("id", None)
+  if not id_:
+    return "No ID", 400
+  file = File.query.filter_by(id=id_).first()
+  if not file:
+    return "Invalid ID", 400
+  return flask.send_file(file.full_path()), 200
+
 
 #######
 # Run #
