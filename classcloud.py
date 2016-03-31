@@ -92,7 +92,9 @@ if __name__ == "__main__":
   db.drop_all()
   db.create_all()
   token = get_token()
-  if not token:
+  if token:
+  	app.run(host=HOST, port=PORT)
+  else:
   	print("Could not read token.\nExiting...")
-  	return
-  app.run(host=HOST, port=PORT)
+
+
