@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import flask
 import flask_sqlalchemy
+import json
 import os
 from werkzeug import secure_filename
 import random
@@ -15,19 +16,19 @@ TOKEN_PATH = os.path.join(DIRECTORY, "classcloud.token")
 UPLOAD_FOLDER = "files"
 FILE_ID_LENGTH = 10
 
+# return token or None
+def get_token():
+  try:
+    with open(TOKEN_PATH) as f:
+      return f.read().strip()
+  except Exception as e:
+    print("Couldn't read token: %r" % e)
+    return None
+
 app = flask.Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///classcloud.sqlite"
 db = flask_sqlalchemy.SQLAlchemy(app)
 token = get_token()
-
-# return token or None
-def get_token():
-	try:
-		with open(TOKEN_PATH) as f:
-			return f.read().strip()
-	except Exception as e:
-		print("Couldn't read token: %r" % e)
-		return None
 
 ##########
 # Models #
