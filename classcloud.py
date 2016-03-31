@@ -59,10 +59,10 @@ def list_files():
 
 @app.route("/put_file", methods=["POST"])
 def put_file():
-  data = request.get_json()
+  data = flask.request.get_json()
   if not data or data["token"] != USER_TOKEN:
   	return "Invalid Token", 400
-  file = request.files["file"]
+  file = flask.request.files["file"]
   if file:
     filename = secure_filename(file.filename)
     files = File.query.filter_by(path=data['path'], filename=filename).first()
