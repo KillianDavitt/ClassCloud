@@ -23,7 +23,7 @@ class ServerTestCase(unittest.TestCase):
 
   def test_put_file(self):
     post_data = dict(token=token, file=(StringIO('my file contents'), 'helloworld.txt'), path="/john")
-    result = self.client.post('/put_file', data= {'token':token, 'path':'/john', })
+    result = self.client.post('/put_file', data= {'token':token, 'path':'/john', 'file': (StringIO('my file contents'), 'helloworld.txt')})
     print(result)
     print(result.data)
 
