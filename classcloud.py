@@ -125,8 +125,6 @@ def get_file():
   data = flask.request.get_json()
   if not data:
     return "No token", 400
-  if data.get("token", None) != token:
-    return "Invalid token", 400
   id_ = data.get("id", None)
   if not id_:
     return "No ID", 400

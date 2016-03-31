@@ -34,10 +34,15 @@ class ServerTestCase(unittest.TestCase):
     # upload simple text file
     data = json.dumps({"token": token, "path": "john", "filename": "test.txt", "file": open("test.txt").read()})
     result = self.client.post("/put_file", data=data, content_type="application/json")
+    print(result)
+    
+    result = self.client.get("/list_files", data=json.dumps({"token": token}), content_type="application/json")
+    print(result.data) 
+    
+    data = json.dumps({'id':'4fsrf4'})
+    result = self.client.get("/get_file", data=data, content_type="application/json")
+    print(result.data)
     self.assertEqual(result.status_code, 200)
-    # duplicate file
-    result = self.client.post("/put_file", data=data, content_type="application/json")
-    self.assertEqual(result.status_code, 400)
 
   def test_put_file(self):
     # upload simple text file
