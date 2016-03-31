@@ -58,7 +58,7 @@ def list_files():
     return "Invalid Token", 400
   files = [[file.id, os.path.join(file.path, file.filename)] for file in File.query.all()]
   files.sort(key=lambda x: x[1]) # sort by full path
-  return json.dumps(files), 200
+  return json.dumps(files, indent=2), 200
 
 @app.route("/put_file", methods=["POST"])
 def put_file():
