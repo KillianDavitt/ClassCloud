@@ -64,7 +64,8 @@ def list_files():
 def put_file():
   data = flask.request.get_json()
   if not data or data["token"] != USER_TOKEN:
-  	return "Invalid Token", 400
+    return data
+    return "Invalid Token", 400
   file = flask.request.files["file"]
   if file:
     filename = secure_filename(file.filename)
