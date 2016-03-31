@@ -51,7 +51,7 @@ class File(db.Model):
 @app.route("/list_files", methods=["GET"])
 def list_files():
 	data = request.get_json()
-	if not data or data["token"] == token:
+	if not data or data["token"] != token:
 		return "Invalid Token", 400
 	return json.dumps(file.path for file in File.query.all()), 200
 
@@ -59,24 +59,23 @@ def list_files():
 @app.route("/put_file", methods=["POST"])
 def put_file():
   data = request.get_json()
-  if data and data["token"] == USER_TOKEN:
-    file = request.files["file"]
-    if file:
-      filename = secure_filename(file.filename) 
-      files = File.query.filter_by(path=data['path'], filename=filename).first()
-      
-      if not files:
-        return "A file in this directory already exists", 400
-  
-      # Gen id, A-Z, a-z, 0-9
+  if not data or data["token"] != USER_TOKEN:
+  	return "Invalid Token", 400
+  file = request.files["file"]
+  if file:
+    filename = secure_filename(file.filename)
+    files = File.query.filter_by(path=data['path'], filename=filename).first()
+
+    if not files:
+      return "A file in this directory already exists", 400
+
+    # Gen id, A-Z, a-z, 0-9
 
 
-      new_file = File(id=gen_id(), path=data['path'], filename=filename)
+    new_file = File(id=gen_id(), path=data['path'], filename=filename)
 
-      file.save(os.path.join(UPLOAD_FOLDER, filename))
-      return "Ok", 200
-    else:
-      return "Invalid Token", 400
+    file.save(os.path.join(UPLOAD_FOLDER, filename))
+    return "Ok", 200
 
 def gen_id():
   return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(FILE_ID_LENGTH))
