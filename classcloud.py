@@ -9,7 +9,7 @@ PORT = 3000
 DEBUG = True
 
 app = flask.Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/classcloud.sqlite"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///classcloud.sqlite"
 db = flask_sqlalchemy.SQLAlchemy(app)
 
 ##########
