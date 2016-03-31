@@ -45,20 +45,17 @@ class File(db.Model):
 def list_files():
   return "Success.", 200
 
+@app.route("/get_file", methods=["POST"])
 def get_file():
-  if request.method == 'POST':
-    data = request.json
-    if data['token']==USER_TOKEN:
-      file = request.files['file']
-      if file:
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return "200"
-      else:
-        return "Invalid Token"
-
+  data = request.get_json()
+  if data["token"] == USER_TOKEN:
+    file = request.files["file"]
+    if file:
+      filename = secure_filename(file.filename)
+      file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+      return "Ok", 200
     else:
-      return "Not post, error!"
+      return "Invalid Token", 400
 
 def put_file():
 	pass
