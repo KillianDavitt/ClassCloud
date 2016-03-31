@@ -30,11 +30,13 @@ class ServerTestCase(unittest.TestCase):
     self.assertEqual(result.status_code, 200)
 
   def test_put_file(self):
-    #post_data = dict(token=token, file=(StringIO('my file contents'), 'helloworld.txt'), path="/john")
-    print(token)
-    result = self.client.post('/put_file', data=json.dumps({'token':token, 'path':'/john', 'files':({'test.txt': open('test.txt', 'rb')}), content_type="application/json")
-    print(result)
-    print(result.data)
+    # upload simple text file
+    data = json.dumps({"token": token, "path": "john", "filename": "test.txt", "file": open("test.txt").read()})
+    result = self.client.post("/put_file", data=data, content_type="application/json")
+    self.assertEqual(result.status_code, 200)
+    # duplicate file
+    result = self.client.post("/put_file", data=data, content_type="application/json")
+    self.assertEqual(result.status_code, 400)
 
   def tearDown(self):
     os.remove(os.path.join(DIRECTORY, TESTING_DB))

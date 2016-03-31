@@ -36,8 +36,8 @@ token = get_token()
 
 class File(db.Model):
   id = db.Column(db.String(), primary_key=True)
-  path = db.Column(db.String(), unique=True)
-  filename = db.Column(db.String(20), unique=False)
+  path = db.Column(db.String())
+  filename = db.Column(db.String(20))
 
   def __init__(self, id, path, filename):
     self.id = id
@@ -45,7 +45,7 @@ class File(db.Model):
     self.filename = filename
 
   def full_path(self):
-    return os.path.join(self.path, self.filename)
+    return os.path.join(UPLOAD_FOLDER, os.path.join(self.path, self.filename))
 
 ##########
 # Routes #
@@ -66,24 +66,41 @@ def list_files():
 @app.route("/put_file", methods=["POST"])
 def put_file():
   data = flask.request.get_json()
-  if not data or data['token'] != token:
-    return "Invalid Token", 400
-  file = data["file"]
-  if not file:
-    return "No file found", 400
-
-  filename = secure_filename(file.filename)
-  files = File.query.filter_by(path=data['path'], filename=filename).first()
-
-  if not files:
-    return "A file in this directory already exists", 400
-
-  # Gen id, A-Z, a-z, 0-9
-
-
-  new_file = File(id=gen_id(), path=data['path'], filename=filename)
-
-  file.save(os.path.join(UPLOAD_FOLDER, filename))
+  print(data)
+  # json
+  if not data:
+    return "No json", 400
+  # token
+  if data.get("token", None) != token:
+    return "Invalid token", 400
+  # path
+  path = data.get("path", None)
+  if not path:
+    return "No path", 400
+  # filename
+  filename = data.get("filename", None)
+  if not filename:
+    return "No filename", 400
+  filename = secure_filename(filename)
+  # file data
+  file_data = data.get("file", None)
+  if not file_data:
+    return "No file", 400
+  # check if already exists
+  if File.query.filter_by(path=path, filename=filename).first():
+    return "File already exists", 400
+  # new File object
+  file = File(gen_id(), path, filename)
+  # create directories in path and create file
+  try:
+    os.makedirs(os.path.dirname(file.full_path()), exist_ok=True)
+    with open(file.full_path(), "w") as f:
+      f.write(file_data)
+  except Exception as e:
+    return "Could not create file.", 400
+  # save File to database
+  db.session.add(file)
+  db.session.commit()
   return "Ok", 200
 
 
