@@ -1,7 +1,7 @@
 import classcloud
 import json
 import unittest
-from io import StringIO
+import io
 token = None
 
 class ServerTestCase(unittest.TestCase):
@@ -22,8 +22,8 @@ class ServerTestCase(unittest.TestCase):
     self.assertEqual(result.status_code, 400)
 
   def test_put_file(self):
-    post_data = dict(token=token, file=(StringIO('my file contents'), 'helloworld.txt'), path="/john")
-    result = self.client.post('/put_file', data= {'token':token, 'path':'/john', 'file': (StringIO('my file contents'), 'helloworld.txt')})
+    #post_data = dict(token=token, file=(StringIO('my file contents'), 'helloworld.txt'), path="/john")
+    result = self.client.post('/put_file', data= {'token':token, 'path':'/john', 'file': (io.BytesIO(b"this is a test"), 'test.pdf')})
     print(result)
     print(result.data)
 
