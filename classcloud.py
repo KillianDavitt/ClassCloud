@@ -18,7 +18,7 @@ FILE_ID_LENGTH = 10
 app = flask.Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///classcloud.sqlite"
 db = flask_sqlalchemy.SQLAlchemy(app)
-token = None
+token = get_token()
 
 # return token or None
 def get_token():
@@ -53,8 +53,13 @@ def list_files():
   print("start")
   data = flask.request.get_json()
   print("data")
-  if not data or data["token"] != token:
+  if not data:
+    return "No token", 400
+  if data["token"] != token:
+    print(data["token"])
+    print(token)
     return "Invalid Token", 400
+  print("all gooood")
   return json.dumps(file.path for file in File.query.all()), 200
 
 @app.route("/put_file", methods=["POST"])
@@ -92,7 +97,6 @@ def put_file():
 if __name__ == "__main__":
   db.drop_all()
   db.create_all()
-  token = get_token()
   if token:
   	app.run(host=HOST, port=PORT)
   else:
