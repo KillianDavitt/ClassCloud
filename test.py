@@ -31,7 +31,8 @@ class ServerTestCase(unittest.TestCase):
 
   def test_put_file(self):
     #post_data = dict(token=token, file=(StringIO('my file contents'), 'helloworld.txt'), path="/john")
-    result = self.client.post('/put_file', data={'token':token, 'path':'/john', 'file': (io.BytesIO(b"this is a test"), 'test.pdf')})
+    print(token)
+    result = self.client.post('/put_file', data=json.dumps({'token':token, 'path':'/john', 'files':({'test.txt': open('test.txt', 'rb')}), content_type="application/json")
     print(result)
     print(result.data)
 

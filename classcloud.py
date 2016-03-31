@@ -62,30 +62,32 @@ def list_files():
 @app.route("/put_file", methods=["POST"])
 def put_file():
   data = flask.request.get_json()
-  if not data or data["token"] != USER_TOKEN:
-    return data
+  if not data or data['token'] != token:
     return "Invalid Token", 400
-  file = flask.request.files["file"]
-  if file:
-    filename = secure_filename(file.filename)
-    files = File.query.filter_by(path=data['path'], filename=filename).first()
+  file = data["file"]
+  if not file:
+    return "No file found", 400
 
-    if not files:
-      return "A file in this directory already exists", 400
+  filename = secure_filename(file.filename)
+  files = File.query.filter_by(path=data['path'], filename=filename).first()
 
-    # Gen id, A-Z, a-z, 0-9
+  if not files:
+    return "A file in this directory already exists", 400
+
+  # Gen id, A-Z, a-z, 0-9
 
 
-    new_file = File(id=gen_id(), path=data['path'], filename=filename)
+  new_file = File(id=gen_id(), path=data['path'], filename=filename)
 
-    file.save(os.path.join(UPLOAD_FOLDER, filename))
-    return "Ok", 200
+  file.save(os.path.join(UPLOAD_FOLDER, filename))
+  return "Ok", 200
+
 
 def gen_id():
   return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(FILE_ID_LENGTH))
 
 
-@app.route("get_file", methods=["GET"])
+@app.route("/get_file", methods=["GET"])
 def get_file():
 	pass
 
