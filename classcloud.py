@@ -70,7 +70,7 @@ def list_files():
   if not data:
     return "No token", 400
   if data.get("token", None) != token:
-    return "Invalid Token", 400
+    return "Invalid token", 400
   files = [[file.id, file.full_path()] for file in File.query.all()]
   files.sort(key=lambda x: x[1]) # sort by full path
   return flask.jsonify(files=files), 200
@@ -99,7 +99,9 @@ def put_file():
   if not file_data:
     return "No file", 400
   # check if already exists
-  if File.query.filter_by(path=path, filename=filename).first():
+  f = File.query.filter_by(path=path, filename=filename).first()
+  if f:
+    print(f.filename)
     return "File already exists", 400
   # new File object
   file = File(gen_id(), path, filename)
@@ -107,7 +109,7 @@ def put_file():
   try:
     os.makedirs(os.path.dirname(file.full_path()), exist_ok=True)
     with open(file.full_path(), "w") as f:
-      f.write(file_data)
+      f.write(str(file_data))
   except Exception as e:
     return "Could not create file.", 400
   # save File to database
@@ -124,8 +126,13 @@ def gen_id():
 @app.route("/get_file", methods=["GET"])
 def get_file():
   data = flask.request.get_json()
+  # json
   if not data:
-    return "No token", 400
+    return "No json", 400
+  # token
+  if data.get("token", None) != token:
+    return "Invalid token", 400
+  # ID
   id_ = data.get("id", None)
   if not id_:
     return "No ID", 400
