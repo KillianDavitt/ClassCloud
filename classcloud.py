@@ -9,10 +9,20 @@ DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 HOST = "127.0.0.1"
 PORT = 3000
 DEBUG = True
+TOKEN_PATH = os.path.join(DIRECTORY, "classcloud.token")
 
 app = flask.Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///classcloud.sqlite"
 db = flask_sqlalchemy.SQLAlchemy(app)
+
+# return token or None
+def get_token():
+	try:
+		with open(TOKEN_PATH) as f:
+			return f.read().strip()
+	except Exception as e:
+		print("Couldn't read token: %r" % e)
+		return None
 
 ##########
 # Models #
