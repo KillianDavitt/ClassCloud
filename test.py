@@ -18,8 +18,11 @@ class ServerTestCase(unittest.TestCase):
     result = self.client.get("/list_files")
     self.assertEqual(result.status_code, 400)
     # invalid token
-    result = self.client.get("/list_files", data=json.dumps({"token": token}), content_type="application/json")
+    result = self.client.get("/list_files", data=json.dumps({"token": "invalid_token"}), content_type="application/json")
     self.assertEqual(result.status_code, 400)
+    # correct token
+    result = self.client.get("/list_files", data=json.dumps({"token": token}), content_type="application/json")
+    self.assertEqual(result.status_code, 200)
 
   def test_put_file(self):
     post_data = dict(token=token, file=(StringIO('my file contents'), 'helloworld.txt'), path="/john")

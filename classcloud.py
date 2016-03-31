@@ -51,17 +51,12 @@ class File(db.Model):
 # list all files.
 @app.route("/list_files", methods=["GET"])
 def list_files():
-  print("start")
   data = flask.request.get_json()
-  print("data")
   if not data:
     return "No token", 400
   if data["token"] != token:
-    print(data["token"])
-    print(token)
     return "Invalid Token", 400
-  print("all gooood")
-  return json.dumps(file.path for file in File.query.all()), 200
+  return json.dumps([file.path for file in File.query.all()]), 200
 
 @app.route("/put_file", methods=["POST"])
 def put_file():
