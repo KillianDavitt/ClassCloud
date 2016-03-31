@@ -10,9 +10,9 @@ TESTING_DB = "classcloud_testing.sqlite"
 
 token = classcloud.get_token()
 with open("test.txt", "rb") as f:
-    put_text_data = {"token": token, "path": "john", "filename": "test.txt", "file": str(f.read())}
+  put_text_data = {"token": token, "path": "john", "filename": "test.txt", "file": str(f.read())}
 with open("test.pdf", "rb") as f:
-    put_pdf_data = {"token": token, "path": "john", "filename": "test.pdf", "file": str(f.read())}
+  put_pdf_data = {"token": token, "path": "john", "filename": "test.pdf", "file": str(f.read())}
 put_text_json = json.dumps(put_text_data)
 put_pdf_json = json.dumps(put_pdf_data)
 
@@ -67,8 +67,17 @@ class ServerTestCase(unittest.TestCase):
     result = self.client.get("/get_file", data=get_data, content_type="application/json")
     self.assertEqual(result.status_code, 200)
     self.assertEqual(result.data, put_text_data["file"].encode("utf-8"))
+
+  def test_get_file_pdf(self):
     # upload PDF and get ID
     self.client.post("/put_file", data=put_pdf_json, content_type="application/json")
+    result = self.client.get("/list_files", data=json.dumps({"token": token}), content_type="application/json")
+    id_ = flask.json.loads(result.data)["files"][0][0]
+    # verify PDF
+    get_data = json.dumps({"id": id_, "token": token})
+    result = self.client.get("/get_file", data=get_data, content_type="application/json")
+    self.assertEqual(result.status_code, 200)
+    self.assertEqual(result.data, put_pdf_data["file"].encode("utf-8"))
 
   def test_put_file(self):
     # upload simple text file

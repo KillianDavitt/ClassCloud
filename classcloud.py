@@ -99,9 +99,7 @@ def put_file():
   if not file_data:
     return "No file", 400
   # check if already exists
-  f = File.query.filter_by(path=path, filename=filename).first()
-  if f:
-    print(f.filename)
+  if File.query.filter_by(path=path, filename=filename).first():
     return "File already exists", 400
   # new File object
   file = File(gen_id(), path, filename)
