@@ -15,6 +15,7 @@ UPLOAD_FOLDER = "files"
 app = flask.Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///classcloud.sqlite"
 db = flask_sqlalchemy.SQLAlchemy(app)
+token = None
 
 # return token or None
 def get_token():
@@ -41,10 +42,14 @@ class File(db.Model):
 # Routes #
 ##########
 
-# Route to test connections to this server.
-@app.route("/list_files")
+# list all files.
+@app.route("/list_files", methods=["GET"])
 def list_files():
-  return "Success.", 200
+	data = request.get_json()
+	if not data or data["token"] == token:
+		return "Invalid Token", 400
+	return json.dumps(file.path for file in File.query.all()), 200
+
 
 @app.route("/get_file", methods=["POST"])
 def get_file():
@@ -68,4 +73,8 @@ def put_file():
 if __name__ == "__main__":
   db.drop_all()
   db.create_all()
+  token = get_token()
+  if not token:
+  	print("Could not read token.\nExiting...")
+  	return
   app.run(host=HOST, port=PORT)
