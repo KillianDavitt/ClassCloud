@@ -10,6 +10,7 @@ HOST = "127.0.0.1"
 PORT = 3000
 DEBUG = True
 TOKEN_PATH = os.path.join(DIRECTORY, "classcloud.token")
+UPLOAD_FOLDER = "files"
 
 app = flask.Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///classcloud.sqlite"
@@ -48,11 +49,11 @@ def list_files():
 @app.route("/get_file", methods=["POST"])
 def get_file():
   data = request.get_json()
-  if data["token"] == USER_TOKEN:
+  if data and data["token"] == USER_TOKEN:
     file = request.files["file"]
     if file:
       filename = secure_filename(file.filename)
-      file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+      file.save(os.path.join(UPLOAD_FOLDER, filename))
       return "Ok", 200
     else:
       return "Invalid Token", 400
