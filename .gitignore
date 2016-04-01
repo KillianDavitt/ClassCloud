@@ -1,5 +1,6 @@
 __pycache__/
 files/
+*.pyc
 classcloud.sqlite
 classcloud.token
 result_pdf.pdf
