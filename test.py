@@ -10,11 +10,13 @@ TESTING_DB = "classcloud_testing.sqlite"
 
 token = classcloud.get_token()
 with open("test.txt", "rb") as f:
-  put_text_data = {"token": token, "path": "john", "filename": "test.txt", "file": str(f.read())}
+  text_bytes = f.read()
 with open("test.pdf", "rb") as f:
-  put_pdf_data = {"token": token, "path": "john", "filename": "test.pdf", "file": str(f.read())}
-put_text_json = json.dumps(put_text_data)
-put_pdf_json = json.dumps(put_pdf_data)
+  pdf_bytes = f.read()
+def put_text():
+  return {"file": (io.BytesIO(text_bytes), "test.txt"), "token": token, "path": "john"}
+def put_pdf():
+  return {"file": (io.BytesIO(pdf_bytes), "test.pdf"), "token": token, "path": "john"}
 
 class ServerTestCase(unittest.TestCase):
 
@@ -41,7 +43,7 @@ class ServerTestCase(unittest.TestCase):
     files = flask.json.loads(result.data)["files"]
     self.assertEqual(len(files), 0)
     # list_files contains uploaded file
-    self.client.post("/put_file", data=put_text_json, content_type="application/json")
+    self.client.post("/put_file", data=put_text())
     result = self.client.get("/list_files", data=json.dumps({"token": token}), content_type="application/json")
     self.assertEqual(result.status_code, 200)
     files = flask.json.loads(result.data)["files"]
@@ -54,7 +56,7 @@ class ServerTestCase(unittest.TestCase):
     self.assertEqual(result.status_code, 400)
     self.assertEqual(result.data, b"Invalid token")
     # upload text file and get ID
-    self.client.post("/put_file", data=put_text_json, content_type="application/json")
+    self.client.post("/put_file", data=put_text())
     result = self.client.get("/list_files", data=json.dumps({"token": token}), content_type="application/json")
     id_ = flask.json.loads(result.data)["files"][0][0]
     # invalid ID
@@ -66,28 +68,30 @@ class ServerTestCase(unittest.TestCase):
     get_data = json.dumps({"id": id_, "token": token})
     result = self.client.get("/get_file", data=get_data, content_type="application/json")
     self.assertEqual(result.status_code, 200)
-    self.assertEqual(result.data, put_text_data["file"].encode("utf-8"))
+    self.assertEqual(result.data, text_bytes)
 
   def test_get_file_pdf(self):
     # upload PDF and get ID
-    self.client.post("/put_file", data=put_pdf_json, content_type="application/json")
+    self.client.post("/put_file", data=put_pdf())
     result = self.client.get("/list_files", data=json.dumps({"token": token}), content_type="application/json")
     id_ = flask.json.loads(result.data)["files"][0][0]
     # verify PDF
     get_data = json.dumps({"id": id_, "token": token})
     result = self.client.get("/get_file", data=get_data, content_type="application/json")
     self.assertEqual(result.status_code, 200)
-    self.assertEqual(result.data, put_pdf_data["file"].encode("utf-8"))
+    self.assertEqual(result.data, pdf_bytes)
+    with open("result_pdf.pdf", "wb") as f:
+        f.write(result.data)
 
   def test_put_file(self):
     # upload simple text file
-    result = self.client.post("/put_file", data=put_text_json, content_type="application/json")
+    result = self.client.post("/put_file", data=put_text())
     self.assertEqual(result.status_code, 200)
     # duplicate file
-    result = self.client.post("/put_file", data=put_text_json, content_type="application/json")
+    result = self.client.post("/put_file", data=put_text())
     self.assertEqual(result.status_code, 400)
     # upload PDF
-    result = self.client.post("/put_file", data=put_pdf_json, content_type="application/json")
+    result = self.client.post("/put_file", data=put_pdf())
     self.assertEqual(result.status_code, 200)
 
   def tearDown(self):

@@ -2,3 +2,4 @@ __pycache__/
 files/
 classcloud.sqlite
 classcloud.token
+result_pdf.pdf

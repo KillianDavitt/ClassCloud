@@ -78,7 +78,7 @@ def list_files():
 # add a file
 @app.route("/put_file", methods=["POST"])
 def put_file():
-  data = flask.request.get_json()
+  data = flask.request.values
   # json
   if not data:
     return "No json", 400
@@ -89,15 +89,12 @@ def put_file():
   path = data.get("path", None)
   if not path:
     return "No path", 400
-  # filename
-  filename = data.get("filename", None)
-  if not filename:
-    return "No filename", 400
-  filename = werkzeug.secure_filename(filename)
   # file data
-  file_data = data.get("file", None)
-  if not file_data:
+  fp = flask.request.files.get("file", None)
+  if not fp:
     return "No file", 400
+  # filename
+  filename = werkzeug.secure_filename(fp.filename)
   # check if already exists
   if File.query.filter_by(path=path, filename=filename).first():
     return "File already exists", 400
@@ -106,8 +103,7 @@ def put_file():
   # create directories in path and create file
   try:
     os.makedirs(os.path.dirname(file.full_path()), exist_ok=True)
-    with open(file.full_path(), "w") as f:
-      f.write(str(file_data))
+    fp.save(file.full_path())
   except Exception as e:
     return "Could not create file.", 400
   # save File to database
