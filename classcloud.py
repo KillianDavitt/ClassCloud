@@ -61,6 +61,9 @@ class File(db.Model):
   def full_path(self):
     return os.path.join(UPLOAD_FOLDER, os.path.join(self.path, self.filename))
 
+  def relative_path(self):
+    return os.path.join(self.path, self.filename)
+
 ##########
 # Routes #
 ##########
@@ -73,7 +76,7 @@ def list_files():
     return "No token", 400
   if data.get("token", None) != token:
     return "Invalid token", 400
-  files = [[file.id, file.full_path()] for file in File.query.all()]
+  files = [[file.id, file.relative_path()] for file in File.query.all()]
   files.sort(key=lambda x: x[1]) # sort by full path
   return flask.jsonify(files=files), 200
 
