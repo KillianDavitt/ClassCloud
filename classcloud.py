@@ -11,7 +11,7 @@ import werkzeug
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 HOST = "127.0.0.1"
-PORT = 3000
+PORT = 8000
 DEBUG = True
 TOKEN_PATH = os.path.join(DIRECTORY, "classcloud.token")
 UPLOAD_FOLDER = os.path.join(DIRECTORY, "files")
@@ -105,6 +105,7 @@ def put_file():
     os.makedirs(os.path.dirname(file.full_path()), exist_ok=True)
     fp.save(file.full_path())
   except Exception as e:
+    print("Could not create file: %r" % e)
     return "Could not create file.", 400
   # save File to database
   db.session.add(file)
@@ -134,7 +135,6 @@ def get_file():
   if not file:
     return "Invalid ID", 400
   return flask.send_file(file.full_path()), 200
-
 
 #######
 # Run #
