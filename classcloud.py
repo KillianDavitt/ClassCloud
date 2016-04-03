@@ -141,8 +141,6 @@ def get_file():
 #######
 
 if __name__ == "__main__":
-  empty_folder(UPLOAD_FOLDER)
-  db.drop_all()
   db.create_all()
   app.run(host=HOST, port=PORT, debug=DEBUG)
 
