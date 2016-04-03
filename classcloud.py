@@ -17,7 +17,7 @@ TOKEN_PATH = os.path.join(DIRECTORY, "classcloud.token")
 UPLOAD_FOLDER = os.path.join(DIRECTORY, "files")
 FILE_ID_LENGTH = 10
 
-# return token or None
+# Return token or None.
 def get_token():
   try:
     with open(TOKEN_PATH) as f:
@@ -26,11 +26,13 @@ def get_token():
     print("Couldn't read token: %r" % e)
     return None
 
+# Setup the flask app, db and token.
 app = flask.Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///classcloud.sqlite"
 db = flask_sqlalchemy.SQLAlchemy(app)
 token = get_token()
 
+# Delete all files and subdirectories of the given folder.
 def empty_folder(folder):
   for file in os.listdir(folder):
     file_path = os.path.join(folder, file)
