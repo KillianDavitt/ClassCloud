@@ -82,6 +82,9 @@ class ServerTestCase(unittest.TestCase):
     self.assertEqual(result.data, pdf_bytes)
     with open("result_pdf.pdf", "wb") as f:
         f.write(result.data)
+    with open("result_pdf.pdf", "rb") as f:
+        self.assertEqual(result.data, f.read())
+    os.remove("result_pdf.pdf")
 
   def test_put_file(self):
     # upload simple text file
