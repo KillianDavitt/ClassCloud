@@ -120,20 +120,9 @@ def gen_id():
   return "".join(random.SystemRandom().choice(chars) for _ in range(FILE_ID_LENGTH))
 
 # return a file corresponding to a given id. token required
-@app.route("/get_file", methods=["GET"])
-def get_file():
-  data = flask.request.get_json()
-  # json
-  if not data:
-    return "No json", 400
-  # token
-  if data.get("token", None) != token:
-    return "Invalid token", 400
-  # ID
-  id_ = data.get("id", None)
-  if not id_:
-    return "No ID", 400
-  file = File.query.filter_by(id=id_).first()
+@app.route("/get_file/<id>", methods=["GET"])
+def get_file(id):
+  file = File.query.filter_by(id=id).first()
   if not file:
     return "Invalid ID", 400
   return flask.send_file(file.full_path()), 200
