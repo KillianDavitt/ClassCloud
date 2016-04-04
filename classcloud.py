@@ -76,7 +76,7 @@ def list_files():
   files.sort(key=lambda x: x[1]) # sort by full path
   return flask.jsonify(files=files), 200
 
-# add a file
+# upload a file, returns the file ID on success
 @app.route("/put_file", methods=["POST"])
 def put_file():
   data = flask.request.values
@@ -111,7 +111,7 @@ def put_file():
   # save File to database
   db.session.add(file)
   db.session.commit()
-  return "Ok", 200
+  return file.id, 200
 
 # return a random string of FILE_ID_LENGTH length
 def gen_id():
