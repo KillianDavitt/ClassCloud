@@ -25,6 +25,7 @@ def get_token():
 # Setup the flask app, db and token.
 app = flask.Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///classcloud.sqlite"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 db = flask_sqlalchemy.SQLAlchemy(app)
 token = get_token()
 
