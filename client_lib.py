@@ -27,3 +27,11 @@ def put_file(url, token, path, filename, file_bytes):
   response = requests.post(url, files=files, data=data)
   print(response.text)
   return response.status_code == 200
+
+# Remove a file from the file server, return True on success else False.
+def rm_file(url, token, id):
+  url = urllib.parse.urljoin(FILE_SERVER_URL, "/rm_file")
+  data = {"token": token, "id": id_}
+  response = requests.post(url, files=files, data=data)
+  print(response.text)
+  return response.status_code == 200
