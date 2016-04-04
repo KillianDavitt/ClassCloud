@@ -94,6 +94,22 @@ class ServerTestCase(unittest.TestCase):
     result = self.client.post("/put_file", data=put_pdf())
     self.assertEqual(result.status_code, 200)
 
+  def test_rm_file(self):
+    # upload simple text file
+    result = self.client.post("/put_file", data=put_text())
+    # list of files
+    result = self.client.get("/list_files", data=json.dumps({"token": token}), content_type="application/json")
+    files = flask.json.loads(result.data)["files"]
+    self.assertEqual(len(files), 1)
+    # rm file
+    result = self.client.post("/rm_file", data=json.dumps({"token": token, "id": files[0][0]}), content_type="application/json")
+    self.assertEqual(result.status_code, 200)
+    # list of files
+    result = self.client.get("/list_files", data=json.dumps({"token": token}), content_type="application/json")
+    files = flask.json.loads(result.data)["files"]
+    self.assertEqual(len(files), 0)
+
+
   def tearDown(self):
     os.remove(os.path.join(DIRECTORY, TESTING_DB))
 

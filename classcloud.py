@@ -141,6 +141,34 @@ def get_file():
     return "Invalid ID", 400
   return flask.send_file(file.full_path()), 200
 
+# Remove a file. Token required.
+@app.route("/rm_file", methods=["POST"])
+def rm_file():
+  data = flask.request.get_json()
+  # json
+  if not data:
+    return "No json", 400
+  # token
+  if data.get("token", None) != token:
+    return "Invalid token", 400
+  # ID
+  id_ = data.get("id", None)
+  if not id_:
+    return "No ID", 400
+  file = File.query.filter_by(id=id_).first()
+  if not file:
+    return "Invalid ID", 400
+  # remove file and database entry
+  os.remove(file.full_path())
+  db.session.delete(file)
+  db.session.commit()
+  # remove empty folders in file path
+  path = "".join(file.relative_path().split("/")[:-1]) # remove filename part
+  while path:
+    os.rmdir(os.path.join(UPLOAD_FOLDER, path))
+    path = "".join(path.split("/")[:-1]) # remove deleted folder
+  return "Succesfully removed.", 200
+
 #######
 # Run #
 #######
