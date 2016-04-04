@@ -88,7 +88,7 @@ def put_file():
     return "Invalid token", 400
   # path
   path = data.get("path", None)
-  if not path:
+  if path == None:
     return "No path", 400
   # file data
   fp = flask.request.files.get("file", None)
@@ -172,5 +172,3 @@ def rm_file():
 if __name__ == "__main__":
   db.create_all()
   app.run(host=HOST, port=PORT, debug=DEBUG)
-
-
