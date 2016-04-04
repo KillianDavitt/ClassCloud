@@ -19,12 +19,8 @@ FILE_ID_LENGTH = 10
 
 # Return token or None.
 def get_token():
-  try:
-    with open(TOKEN_PATH) as f:
-      return f.read().strip()
-  except Exception as e:
-    print("Couldn't read token: %r" % e)
-    return None
+  with open(TOKEN_PATH) as f:
+    return f.read().strip()
 
 # Setup the flask app, db and token.
 app = flask.Flask(__name__)
