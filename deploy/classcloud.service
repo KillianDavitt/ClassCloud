@@ -1,0 +1,10 @@
+[Unit]
+Description=Classcloud web service
+
+[Service]
+WorkingDirectory=<DIR>/ ClassCloud
+ExecStart=<DIR>/ClassCloud/flask/bin/uwsgi --ini classcloud.ini
+User=root
+
+[Install]
+WantedBy=multi-user.target
