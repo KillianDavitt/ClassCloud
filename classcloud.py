@@ -59,16 +59,16 @@ class File(db.Model):
     return os.path.join(UPLOAD_FOLDER, os.path.join(self.path, self.filename))
 
   def relative_path(self):
-    return os.path.join(self.path, self.filename)
+    return os.path.join(self.filename)
 
 ##########
 # Routes #
 ##########
 
 # list all files.
-@app.route("/list_files", methods=["GET"])
+@app.route("/list_files", methods=["POST"])
 def list_files():
-  data = flask.request.get_json()
+  data = flask.request.values
   if not data:
     return "No token", 400
   if data.get("token", None) != token:
@@ -98,6 +98,7 @@ def put_file():
   # filename
   filename = werkzeug.secure_filename(fp.filename)
   # check if already exists
+  print(filename)
   if File.query.filter_by(path=path, filename=filename).first():
     return "File already exists", 400
   # new File object
@@ -112,6 +113,7 @@ def put_file():
   # save File to database
   db.session.add(file)
   db.session.commit()
+  print("File is now in the database")
   return file.id, 200
 
 # return a random string of FILE_ID_LENGTH length
@@ -130,7 +132,7 @@ def get_file(id):
 # Remove a file. Token required.
 @app.route("/rm_file", methods=["POST"])
 def rm_file():
-  data = flask.request.get_json()
+  data = flask.request.values
   # json
   if not data:
     return "No json", 400
