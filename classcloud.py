@@ -1,12 +1,14 @@
 #!/usr/bin/python3
-import flask
-import flask_sqlalchemy
-import json
+""" Main ClassCloud views, define endpoints
+"""
 import os
 import random
 import shutil
 import string
 import werkzeug
+import flask
+import flask_sqlalchemy
+
 
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
@@ -41,27 +43,6 @@ def empty_folder(folder):
     except Exception as e:
       print("Could not delete file %s: %r" % (file_path, e))
 
-##########
-# Models #
-##########
-
-class File(db.Model):
-  id = db.Column(db.String(), primary_key=True)
-  path = db.Column(db.String())
-  filename = db.Column(db.String(20))
-
-  def __init__(self, id, path, filename):
-    self.id = id
-    self.path = path
-    self.filename = filename
-
-  def full_path(self):
-    return os.path.join(UPLOAD_FOLDER, os.path.join(self.path, self.filename))
-
-  def relative_path(self):
-    return os.path.join(self.filename)
-
-##########
 # Routes #
 ##########
 
@@ -73,9 +54,11 @@ def list_files():
     return "No token", 400
   if data.get("token", None) != token:
     return "Invalid token", 400
-  files = [[file.id, file.relative_path()] for file in File.query.all()]
-  files.sort(key=lambda x: x[1]) # sort by full path
-  return flask.jsonify(files=files), 200
+  files = [{file.relative_path() : file.id } for file in File.query.all()]
+  files = files[0]
+  #files.sort(key=lambda x: x[1]) # sort by full path
+  print(flask.jsonify(files=files))
+  return flask.jsonify(files), 200
 
 # upload a file, returns the file ID on success
 @app.route("/put_file", methods=["POST"])
@@ -156,6 +139,23 @@ def rm_file():
     os.rmdir(os.path.join(UPLOAD_FOLDER, path))
     path = "".join(path.split("/")[:-1]) # remove deleted folder
   return "Succesfully removed.", 200
+
+class File(db.Model):
+  id = db.Column(db.String(), primary_key=True)
+  path = db.Column(db.String())
+  filename = db.Column(db.String(20))
+
+  def __init__(self, id, path, filename):
+    self.id = id
+    self.path = path
+    self.filename = filename
+
+  def full_path(self):
+    return os.path.join(UPLOAD_FOLDER, os.path.join(self.path, self.filename))
+
+  def relative_path(self):
+    return os.path.join(self.path, self.filename)
+
 
 #######
 # Run #
