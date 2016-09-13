@@ -20,8 +20,11 @@ flask/bin/pip3 install -r requirements.txt
 
 #Quick check of the tests
 flask/bin/python3 tests.py
+```
+Ensure nginx is installed before this next step
 
-## Ensure nginx is installed
+Then edit deploy/classcloud-nginx to suit your needs, your domain name etc etc
+```bash
 cp ./deploy/classcloud-nginx /etc/nginx/site-enabled/classcloud
 cp ./deploy/classcloud.service /etc/systemd/system/classcloud.service
 
