@@ -3,7 +3,7 @@ A minimal cloud storage service written in Flask
 
 ClassCloud accepts HTTP requests to list, get, and put files.
 
-A collaboration between [Jeremy]http://jerbroon.netsoc.ie/) and [Killian](http://killiandavitt.me)
+A collaboration between [Jeremy](http://jerbroon.netsoc.ie/) and [Killian](http://killiandavitt.me)
 
 ## Deployment
 
