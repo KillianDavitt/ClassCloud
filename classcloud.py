@@ -54,11 +54,10 @@ def list_files():
     return "No token", 400
   if data.get("token", None) != token:
     return "Invalid token", 400
-  files = [{file.relative_path() : file.id } for file in File.query.all()]
-  files = files[0]
-  #files.sort(key=lambda x: x[1]) # sort by full path
-  print(flask.jsonify(files=files))
-  return flask.jsonify(files), 200
+  file = File.query.first()
+  file = {file.relative_path(): file.id }
+  print(flask.jsonify(file=file))
+  return flask.jsonify(file), 200
 
 # upload a file, returns the file ID on success
 @app.route("/put_file", methods=["POST"])
