@@ -55,6 +55,7 @@ def list_files():
   if data.get("token", None) != token:
     return "Invalid token", 400
   files = [{file.relative_path() : file.id } for file in File.query.all()]
+  files = files[0]
   #files.sort(key=lambda x: x[1]) # sort by full path
   print(flask.jsonify(files=files))
   return flask.jsonify(files), 200
